@@ -57,7 +57,12 @@ module.exports = {
                 .setCustomId(buttonNextId)
                 .setLabel('Next')
                 .setStyle('PRIMARY');
-            const row = new MessageActionRow().addComponents(buttonNext);
+            const buttonClearId = `clear${interaction.id}`;
+            const buttonClear = new MessageButton()
+                .setCustomId(buttonClearId)
+                .setLabel('Clear')
+                .setStyle('SECONDARY');
+            const row = new MessageActionRow().addComponents(buttonNext, buttonClear);
             const embed = new MessageEmbed().setColor('#FFFC00');
 
             updateEmbed(embed, snaps, currentSnapIndex);
@@ -67,7 +72,7 @@ module.exports = {
                 files: [getSnapUrl(snaps[currentSnapIndex])],
             });
 
-            const filter = i => (i.customId === buttonNextId) && (i.user.id === interaction.member.id);
+            const filter = i => ([buttonNextId, buttonClearId].includes(i.customId)) && (i.user.id === interaction.member.id);
             const collector = interaction.channel.createMessageComponentCollector({ filter, idle: 40000, dispose: true });
             collector.on('collect', async i => {
                 try {
@@ -84,6 +89,9 @@ module.exports = {
                         // TODO: still have to update to "reply" to the interaction button
                         await i.update({
                         });
+                    }
+                    else if (i.customId === buttonClearId) {
+                        await interaction.deleteReply();
                     }
                 }
                 catch (error) {
