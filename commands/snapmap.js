@@ -98,16 +98,16 @@ module.exports = {
                     console.error(error);
                 }
             });
-            collector.on('end', _collected => {
+            collector.on('end', async _collected => {
                 try {
-                    interaction.editReply({
+                    await interaction.editReply({
                         components: [],
                     });
                 }
                 catch (error) {
                     console.error(error);
                 }
-           });
+            });
         }
         catch (error) {
             console.error(error);
