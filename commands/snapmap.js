@@ -73,7 +73,7 @@ module.exports = {
             });
 
             const filter = i => ([buttonNextId, buttonClearId].includes(i.customId)) && (i.user.id === interaction.member.id);
-            const collector = interaction.channel.createMessageComponentCollector({ filter, idle: 40000, dispose: true });
+            const collector = interaction.channel.createMessageComponentCollector({ filter, idle: 120000, dispose: true });
             collector.on('collect', async i => {
                 try {
                     if (i.customId === buttonNextId) {
@@ -91,7 +91,7 @@ module.exports = {
                         });
                     }
                     else if (i.customId === buttonClearId) {
-                        await interaction.deleteReply();
+                        collector.stop();
                     }
                 }
                 catch (error) {
@@ -100,9 +100,7 @@ module.exports = {
             });
             collector.on('end', async _collected => {
                 try {
-                    await interaction.editReply({
-                        components: [],
-                    });
+                    await interaction.deleteReply();
                 }
                 catch (error) {
                     console.error(error);
