@@ -70,26 +70,35 @@ module.exports = {
             const filter = i => (i.customId === buttonNextId) && (i.user.id === interaction.member.id);
             const collector = interaction.channel.createMessageComponentCollector({ filter, idle: 40000, dispose: true });
             collector.on('collect', async i => {
-                // TODO: try/catch
-                if (i.customId === buttonNextId) {
-                    currentSnapIndex++;
-                    nbSnapsLeft = snaps.length - (currentSnapIndex + 1);
-                    updateEmbed(embed, snaps, currentSnapIndex);
-                    // TODO: can't use `update` because it adds another video instead of replacing it
-                    await interaction.editReply({
-                        components: nbSnapsLeft ? [row] : [],
-                        embeds: [embed],
-                        files: [getSnapUrl(snaps[currentSnapIndex])],
-                    });
-                    // TODO: still have to update to "reply" to the interaction button
-                    await i.update({
-                    });
+                try {
+                    if (i.customId === buttonNextId) {
+                        currentSnapIndex++;
+                        nbSnapsLeft = snaps.length - (currentSnapIndex + 1);
+                        updateEmbed(embed, snaps, currentSnapIndex);
+                        // TODO: can't use `update` because it adds another video instead of replacing it
+                        await interaction.editReply({
+                            components: nbSnapsLeft ? [row] : [],
+                            embeds: [embed],
+                            files: [getSnapUrl(snaps[currentSnapIndex])],
+                        });
+                        // TODO: still have to update to "reply" to the interaction button
+                        await i.update({
+                        });
+                    }
+                }
+                catch (error) {
+                    console.error(error);
                 }
             });
             collector.on('end', _collected => {
-                interaction.editReply({
-                    components: [],
-                });
+                try {
+                    interaction.editReply({
+                        components: [],
+                    });
+                }
+                catch (error) {
+                    console.error(error);
+                }
            });
         }
         catch (error) {
